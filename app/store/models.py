@@ -1,10 +1,5 @@
 from django.db import models
-
-
-# working on Circular relationship
-class Collection(models.Model):
-    title = models.CharField(max_length=255)
-    featured_product = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True, related_name='+')
+from django.utils import timezone
 
 
 # creating Promotion class for many - to - many  relationship
@@ -14,18 +9,21 @@ class Promotion(models.Model):
     discount = models.FloatField()
 
 
+# working on Circular relationship
+class Collection(models.Model):
+    title = models.CharField(max_length=255)
+    featured_product = models.ForeignKey(
+        'Product', on_delete=models.SET_NULL, null=True, related_name='+')
+
+
 # one-to-Many Relationship
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
-    # address bar has id and content-key (for search engine to recognize content of web)
     slug = models.SlugField()
     description = models.TextField()
-    # Decimal file => 99999.99
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField()
-    # each time product is added time is updated
-    # if we add auto_now_add => will update,only when first time is added
     last_update = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     promotions = models.ManyToManyField(Promotion)
@@ -41,39 +39,28 @@ class Customer(models.Model):
         (MEMBERSHIP_SILVER, 'Silver'),
         (MEMBERSHIP_GOLD, 'Gold'),
     ]
-
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    email = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=255)
     birth_date = models.DateField(null=True)
     membership = models.CharField(
-        max_length=1,
-        choices=MEMBERSHIP_CHOICES,
-        default=MEMBERSHIP_BRONZE)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['last_name', 'first_name'])
-        ]
+        max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
 
 
 class Order(models.Model):
     PAYMENT_STATUS_PENDING = 'P'
-    PAYMENT_STATUS_COMPLETED = 'C'
+    PAYMENT_STATUS_COMPLETE = 'C'
     PAYMENT_STATUS_FAILED = 'F'
-
     PAYMENT_STATUS_CHOICES = [
         (PAYMENT_STATUS_PENDING, 'Pending'),
-        (PAYMENT_STATUS_COMPLETED, 'Complete'),
-        (PAYMENT_STATUS_FAILED, 'Failed'),
+        (PAYMENT_STATUS_COMPLETE, 'Complete'),
+        (PAYMENT_STATUS_FAILED, 'Failed')
     ]
 
     placed_at = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(
-        max_length=1,
-        choices=PAYMENT_STATUS_CHOICES,
-        default=PAYMENT_STATUS_PENDING)
-
+        max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
     # one - to - Many Relationship
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
@@ -85,18 +72,18 @@ primary_key so that,django doesn't create id field and it becomes many to many r
 """
 
 
-class Address(models.Model):
-    street = models.CharField(max_length=255)
-    city = models.CharField(max_length=255)
-    zip = models.CharField(max_length=15)
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True)
-
-
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    quantity = models.PositiveIntegerField()
+    quantity = models.PositiveSmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+
+
+class Address(models.Model):
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE)
 
 
 class Cart(models.Model):
@@ -104,6 +91,6 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
+    quantity = models.PositiveSmallIntegerField()

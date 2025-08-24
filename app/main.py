@@ -1,5 +1,8 @@
+import sys
+
+
 def main():
-    print("Hello from django-storeapi!")
+    print(sys.executable)
 
 
 if __name__ == "__main__":
