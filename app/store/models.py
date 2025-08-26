@@ -14,6 +14,14 @@ class Collection(models.Model):
     title = models.CharField(max_length=255)
     featured_product = models.ForeignKey(
         'Product', on_delete=models.SET_NULL, null=True, related_name='+')
+    
+    # add magic_method __str__ -> str of object
+    def __str__(self):
+        return self.title
+    
+    # add Meta class for defaulting ordering by list of fields
+    class Meta:
+        ordering = ['title']
 
 
 # one-to-Many Relationship
@@ -28,6 +36,15 @@ class Product(models.Model):
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     promotions = models.ManyToManyField(Promotion)
 
+    ##add magic_method __str__ -> used on str data type of object:to avoid seeing -
+    ## general representation of the model class
+
+    def __str__(self):
+        return self.title
+    
+    # add Meta class for defaulting ordering by list of fields
+    class Meta:
+        ordering = ['title']
 
 class Customer(models.Model):
     MEMBERSHIP_BRONZE = 'B'
@@ -46,6 +63,17 @@ class Customer(models.Model):
     birth_date = models.DateField(null=True)
     membership = models.CharField(
         max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
+    
+
+    ##add magic_method __str__ -> used onstr data type of object:to avoid seeing -
+    ## general representation of the model class
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+    # add Meta class for defaulting ordering by list of fields
+    class Meta:
+        ordering = ['first_name','last_name']
 
 
 class Order(models.Model):
@@ -70,7 +98,6 @@ Address <=> Customer,represent one - one Relationship Parent <=> Child
 create 'customer' parent field and adding field choice
 primary_key so that,django doesn't create id field and it becomes many to many relationship 
 """
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)

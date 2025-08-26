@@ -8,5 +8,38 @@
 <h1>
     HELLO {{name}}
 </h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Title</th>
+                <th>Unit Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.title }}</td>
+                <td>{{ product.unit_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- <table>
+        <thead>
+            <tr>
+                <th>Customer Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tag in tags %}
+            <tr>
+                <td>{{ tag.label }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table> -->
+    </ul>
 </body>
 </html>
