@@ -3,7 +3,6 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models import Count
 from django.urls import reverse 
 from django.utils.html import format_html,urlencode
-from tags.models import TaggedItem
 from .import models
 
 # creating cutome filter - adding Inventory
@@ -21,11 +20,6 @@ class InventoryFilter(admin.SimpleListFilter):
         if self.value() == '<10':
             return queryset.filter(inventory__lt=10)
 
-## genric relation -content type using- InlineTabular option  Manage tags for Product
-class TaggedInline(GenericTabularInline):
-    autocomplete_fields =['tag']
-    model = TaggedItem
-
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     # adding auto-complete search field for collection in "add Product form"
@@ -36,7 +30,7 @@ class ProductAdmin(admin.ModelAdmin):
     }
     
     actions = ['clear_inventory']
-    inlines = [TaggedInline]
+ 
     list_display = ['title', 'unit_price','inventory_status','collection_title']
     list_editable = ['unit_price']
     list_per_page = 10
