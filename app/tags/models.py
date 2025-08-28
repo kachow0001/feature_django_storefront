@@ -14,6 +14,9 @@ class TaggedItemManager(models.Model):
 class Tag(models.Model):
     label = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.label
+    
 """
 Since we another app,to import models from store it would be clumsy
 to follow concept of decoupling use Generic way yo identify object 
