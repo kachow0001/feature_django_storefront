@@ -1,6 +1,6 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
-
 
 # creating Promotion class for many - to - many  relationship
 
@@ -29,12 +29,13 @@ class Collection(models.Model):
 class Product(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
-    description = models.TextField()
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    inventory = models.IntegerField()
+    description = models.TextField(null=True, blank=True)
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2,
+                                     validators=[MinValueValidator(1)])
+    inventory = models.IntegerField(validators=[MinValueValidator(1)])
     last_update = models.DateTimeField(auto_now=True)
-    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
-    promotions = models.ManyToManyField(Promotion)
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name="products")
+    promotions = models.ManyToManyField(Promotion,blank=True)
 
     ##add magic_method __str__ -> used on str data type of object:to avoid seeing -
     ## general representation of the model class
@@ -75,7 +76,7 @@ class Customer(models.Model):
     class Meta:
         ordering = ['first_name','last_name']
 
-
+    
 class Order(models.Model):
     PAYMENT_STATUS_PENDING = 'P'
     PAYMENT_STATUS_COMPLETE = 'C'
@@ -91,7 +92,6 @@ class Order(models.Model):
         max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
     # one - to - Many Relationship
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
-
 
 """ 
 Address <=> Customer,represent one - one Relationship Parent <=> Child 
