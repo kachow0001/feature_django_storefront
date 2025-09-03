@@ -12,11 +12,13 @@ class TaggedInline(GenericTabularInline):
     model = TaggedItem
     min_num =1
     max_num =10
-    extra =0
+    extra = 0
 
 # create extension of ProductAdmin 
-class CustomPoductAdmin(ProductAdmin):
+class CustomProductAdmin(ProductAdmin):
     inlines = [TaggedInline]
 
 admin.site.unregister(Product)
-admin.site.register(Product,CustomPoductAdmin)
+admin.site.register(Product,CustomProductAdmin)
+
+ 
