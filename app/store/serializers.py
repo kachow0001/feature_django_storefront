@@ -17,23 +17,26 @@ class ProductSerializer(serializers.ModelSerializer):
     inside the serializer when using ModelSerializer — 
     DRF
     """
-    price = serializers.DecimalField(max_digits=6,decimal_places=2,source='unit_price')
-    price_with_tax = serializers.SerializerMethodField(method_name='get_price_with_tax')
+    # price = serializers.DecimalField(max_digits=6,decimal_places=2,source='unit_price')
     #collection = serializers.StringRelatedField()
     #collection = serializers.PrimaryKeyRelatedField(queryset=Collection.objects.all())
     # to use make this appear more like nested json - add serializers to CollectionSerializer
     #collection = CollectionSerializer()
     # to list collection as Hyperlink
-    collection = serializers.HyperlinkedRelatedField(queryset=Collection.objects.all(),\
-                                                     view_name ='collection-detail')
+    # collection = serializers.HyperlinkedRelatedField(queryset=Collection.objects.all(),\
+                                                #view_name ='collection-detail')
+
+    price_with_tax = serializers.SerializerMethodField(method_name='get_price_with_tax')
 
     class Meta:
         model = Product
-        fields = ['id', 'title','price','price_with_tax','collection']
+        fields = ['id', 'slug', 'title','description','inventory', 'unit_price', 'price_with_tax', 'collection']
+        read_only_fields = ['price_with_tax']
 
     def get_price_with_tax(self, product:Product):
            return product.unit_price * Decimal('1.1')
-    
+
+
     # def validate(self,data):
     #     if data['password'] != data['confirm password']:
     #          return serializers.ValidationError("Password don't match")
