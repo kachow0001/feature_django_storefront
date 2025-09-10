@@ -84,7 +84,7 @@ class CustomerAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
-            order_count=Count('order')
+            products_count=Count('products')
         )
 # editing child using Inline for Managing OrderItem in Order  
 
